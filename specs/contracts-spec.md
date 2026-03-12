@@ -1,80 +1,309 @@
-# Vincentian Hub Contract Patch (v1.0.1)
+# Vincentian Hub Contracts Spec (Merged)
 
-This patch supplements `contracts-spec.md` to close gaps identified during architectural review.
-All items here are contract-locked unless versioned to v2.0.
+Vincentian Hub Contracts and Reference Spec
 
-## Capability Registry
-svdp_view_portal_admin
-svdp_manage_settings
-svdp_manage_conferences
-svdp_manage_user_profiles
-svdp_approve_users
-svdp_edit_dashboard_items
-svdp_edit_others_dashboard_items
-svdp_publish_dashboard_items
-svdp_delete_dashboard_items
-svdp_edit_announcements
-svdp_edit_others_announcements
-svdp_publish_announcements
-svdp_delete_announcements
-svdp_edit_documents
-svdp_edit_others_documents
-svdp_publish_documents
-svdp_delete_documents
-svdp_edit_events
-svdp_edit_others_events
-svdp_publish_events
-svdp_delete_events
-svdp_manage_drive_imports
+Authoritative MVP contract for field names, targeting semantics, capability mapping, route security, and developer reference.
 
-## WordPress Roles
-svdp_member
-svdp_district_staff
-svdp_district_announcements_editor
-svdp_district_editor
-svdp_district_admin
+1. Hard Contracts
 
-## Role Semantics
-svdp_member
-- No administrative portal capabilities
+The following are hard contracts for MVP and require deliberate versioning and migration planning before any change:
 
-svdp_district_staff
-- Access to district dashboard
-- No publishing privileges by default
+Custom post type names, taxonomy names, custom table names, and user meta keys
 
-svdp_district_announcements_editor
-- May create and publish announcements only
+All canonical object meta keys, especially the shared targeting block
 
-svdp_district_editor
-- May manage dashboard items, announcements, documents, and events
+Targeting semantics, including resolver order
 
-svdp_district_admin
-- Full portal administrative capabilities
+Capability names and capability meanings
 
-## svdp_approval_status values
-approved
-pending
-disabled
+Route patterns and server-side security requirements
 
-## svdp_account_scope values
-conference
-district
+WYSIWYG requirement and allowed editor behavior
 
-## Canonical Routes
-/district-resources/<conference-name>/
-/district-resources/district/
-/resource-library/<doc-slug>/
-/events/<event-slug>/
+2. Canonical Object Registry
+
+3. Shared Targeting Keys
+
+The following meta keys must be used identically across dashboard items, announcements, documents, and events.
+
+Prohibited aliases for MVP: svdp_conference_mode, svdp_conference_ids, svdp_group_flags, svdp_active, svdp_start_at, svdp_end_at.
+
+4. Targeting Semantics
+
+Scope
+
+conference: only approved conference users
+
+district: only approved district users
+
+both: approved conference or district users, subject to all other checks
+
+Audience Profiles
+
+Conference: member, president, executive_leadership, spiritual_advisor
+
+District: assistance_line, district_staff, district_announcements_editor, district_admin
+
+Visibility requires intersection between object audience profiles and user role profiles
+
+Conference Targeting Mode
+
+all: all conference users
+
+selected: only listed conference IDs
+
+group_flags: conferences whose true flags intersect the object flags
+
+district_only: district users only
+
+none: only when conference targeting is not relevant because scope or object behavior is effectively district-only
+
+Resolver Order
+
+1. user exists
+
+2. user approved
+
+3. object active
+
+4. publish window
+
+5. scope match
+
+6. audience intersection
+
+7. district or conference targeting match
+
+5. Capability Mapping
+
+6. Route and Security Contract
+
+7. WYSIWYG Contract
+
+WYSIWYG is required in MVP for Dashboard Items full description, Announcements full body, Documents body/description, and Events full description.
+
+Allowed features: paragraphs, H2/H3, bold, italic, bulleted and numbered lists, links, remove formatting, and tables only if explicitly enabled.
+
+Prohibited features: arbitrary HTML for normal editors, free-form font sizing, font-family changes, uncontrolled color formatting, scripts, arbitrary embeds, and page-builder layout behavior.
+
+8. Additional Developer Inputs Included in This Package
+
+Technical handoff document for Codex, Spec Kit, and GitHub Issues
+
+Build backlog and sprint plan
+
+Developer kickoff checklist and acceptance criteria
+
+Plugin scaffold package with module stubs and README
+
+UI integration constraint: adopt the basics of the current WordPress theme, and invest design energy mainly in mobile-first structure, typography, spacing, and large tap targets
+
+9. Versioning
+
+Spec version: v1.0-contract-locked. Additive non-breaking changes move to v1.1. Breaking contract changes move to v2.0 and require migration notes.
+
+---
+
+Vincentian Hub – Updated Contracts & Reference Spec
+
+Plugin Identity Lock
+
+Plugin Name: Vincentian Hub
+
+Plugin Slug: vincentian-hub
+
+GitHub Repository: vincentian-hub
+
+Code Prefix: vincentian_hub_
+
+Schema / Meta Prefix: svdp_
+
+PHP Namespace: VincentianHub
+
+Admin Menu Label: Vincentian Hub
+
+Volunteer-Facing Name: Vincentian Hub
+
+Main Plugin File: vincentian-hub.php
+
+Text Domain: vincentian-hub
+
+Header Logo Contract
+
+Purpose:
+
+Allow a district administrator to upload the Society of St Vincent de Paul logo (or district-approved mark) and display it in the Vincentian Hub header.
+
+Placement:
+
+Top-left of the header area.
+
+Layout pattern (desktop):
+
+[ Logo ]  Vincentian Hub
+
+Page Heading
+
+Layout pattern (mobile):
+
+[Logo]
+
+Vincentian Hub
+
+Page Heading
+
+Reserved Logo Container:
+
+Desktop:
+
+max-width: 240px
+
+max-height: 64px
+
+Mobile:
+
+max-width: 180px
+
+max-height: 48px
+
+Rendering Rules:
+
+- Maintain aspect ratio
+
+- Do not crop
+
+- Use object-fit: contain
+
+- Logo scales responsively
+
+Upload Location:
+
+Vincentian Hub → Settings → Branding
+
+Setting Key:
+
+vincentian_hub_logo_attachment_id
+
+Allowed File Types:
+
+- PNG
+
+- SVG
+
+- JPG
+
+Recommended Upload Size:
+
+600×160 or larger
+
+Image Handling:
+
+Register image size:
+
+add_image_size('vincentian_hub_logo', 480, 120, false);
+
+Fallback Behavior:
+
+If no logo uploaded:
+
+Display text heading only: “Vincentian Hub”
+
+Accessibility:
+
+Default alt text:
+
+“Society of St Vincent de Paul”
+
+Targeting Resolver Contract
+
+Shared targeting keys (immutable):
+
+svdp_scope
+
+svdp_audience_profiles
+
+svdp_target_conference_mode
+
+svdp_target_conference_ids
+
+svdp_target_group_flags
+
+svdp_is_active
+
+svdp_publish_start
+
+svdp_publish_end
+
+Resolver evaluation order:
+
+1. user exists
+
+2. user approved
+
+3. object active
+
+4. publish window
+
+5. scope match
+
+6. audience intersection
+
+7. conference/district targeting match
+
+Calendar Export Contract
+
+WordPress is the system of record for events.
+
+Calendar export methods:
+
+1. Personalized ICS subscription feed
+
+2. Single-event ICS download
+
+3. Add-to-Google-Calendar link
+
+Feed route:
+
 /portal-calendar/feed/<token>/
+
+Single event route:
+
 /portal-calendar/event/<event_id>/download/
 
-## Security
-All protected routes must:
-- construct normalized user context
-- call the targeting resolver
-- enforce server-side permission checks
+WYSIWYG Contract
 
-Client-side filtering is insufficient.
+WYSIWYG editor required for:
 
-## Resolver Step 7 wording
-conference/district targeting match
+- Dashboard Items
+
+- Announcements
+
+- Documents
+
+- Events
+
+Allowed formatting:
+
+- Paragraph
+
+- H2/H3
+
+- Bold
+
+- Italic
+
+- Bulleted list
+
+- Numbered list
+
+- Links
+
+- Table (optional)
+
+Disallowed:
+
+- arbitrary HTML
+
+- script embeds
+
+- uncontrolled color/fonts
