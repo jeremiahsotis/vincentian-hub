@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vincentian Hub Layout Structure</title>
+  <style>
+    :root{
+      --bg:#f6f4ef;
+      --surface:#ffffff;
+      --surface-soft:#fcfbf8;
+      --ink:#2b2b2b;
+      --muted:#65615b;
+      --stroke:#d8d3c6;
+      --accent:#1f4d43;
+      --accent-soft:#e9f1ee;
+      --radius:18px;
+      --shadow:0 1px 2px rgba(0,0,0,.04);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+    }
+    .vh-wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:16px;
+    }
+    .vh-header,.vh-section-card,.vh-panel,.vh-card,.vh-search{
+      background:var(--surface);
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .vh-header{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+      padding:16px;
+      margin-bottom:16px;
+    }
+    .vh-logo-slot{
+      width:min(180px,100%);
+      height:48px;
+      border:1px dashed #b9b29f;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      background:#f2ede2;
+    }
+    .vh-logo-slot img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      display:block;
+    }
+    .vh-kicker{
+      font-size:.95rem;
+      color:var(--accent);
+      font-weight:700;
+      margin:0 0 2px;
+    }
+    .vh-page-title{
+      font-size:1.7rem;
+      line-height:1.15;
+      margin:0;
+    }
+    .vh-search{
+      padding:14px 16px;
+      margin-bottom:16px;
+    }
+    .vh-search-input{
+      width:100%;
+      border:none;
+      outline:none;
+      font-size:1.1rem;
+      background:transparent;
+      color:var(--ink);
+    }
+    .vh-layout{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+    }
+    .vh-main{
+      display:grid;
+      gap:16px;
+    }
+    .vh-aside{
+      display:grid;
+      gap:16px;
+    }
+    .vh-section-card{
+      padding:16px;
+    }
+    .vh-section-title{
+      margin:0 0 14px;
+      font-size:1.35rem;
+      line-height:1.2;
+    }
+    .vh-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+    }
+    .vh-grid--two{
+      grid-template-columns:1fr;
+    }
+    .vh-card{
+      padding:16px;
+      min-height:132px;
+    }
+    .vh-card h3{
+      margin:0 0 8px;
+      font-size:1.1rem;
+      line-height:1.2;
+    }
+    .vh-card p{
+      margin:0;
+      color:var(--muted);
+    }
+    .vh-list{
+      display:grid;
+      gap:12px;
+    }
+    .vh-list-item{
+      background:var(--surface-soft);
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      padding:14px 16px;
+    }
+    .vh-list-item h3{
+      margin:0 0 6px;
+      font-size:1.05rem;
+    }
+    .vh-list-item p{
+      margin:0;
+      color:var(--muted);
+    }
+    .vh-actions{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .vh-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:44px;
+      padding:10px 14px;
+      border-radius:14px;
+      border:1px solid var(--stroke);
+      background:var(--accent-soft);
+      color:var(--accent);
+      text-decoration:none;
+      font-weight:700;
+    }
+    .vh-help{
+      color:var(--muted);
+    }
+    @media (min-width: 700px){
+      .vh-header{
+        grid-template-columns:240px 1fr;
+        align-items:center;
+      }
+      .vh-logo-slot{
+        width:240px;
+        height:64px;
+      }
+      .vh-grid--two{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+    @media (min-width: 1024px){
+      .vh-layout{
+        grid-template-columns:minmax(0,2fr) minmax(280px, 360px);
+        align-items:start;
+      }
+      .vh-main{order:1}
+      .vh-aside{order:2}
+    }
+  </style>
+</head>
+<body>
+  <div class="vh-wrap">
+    <header class="vh-header">
+      <div class="vh-logo-slot" aria-label="Logo area">
+        <!-- District-admin uploaded rectangular logo goes here -->
+        LOGO AREA
+      </div>
+      <div>
+        <p class="vh-kicker">Vincentian Hub</p>
+        <h1 class="vh-page-title">St. Mary Conference Resources</h1>
+      </div>
+    </header>
+
+    <section class="vh-search" aria-label="Search">
+      <input class="vh-search-input" type="search" placeholder="What do you need today?" />
+    </section>
+
+    <div class="vh-layout">
+      <main class="vh-main">
+        <section class="vh-section-card" aria-labelledby="most-used-title">
+          <h2 id="most-used-title" class="vh-section-title">Most Used Tools</h2>
+          <div class="vh-grid vh-grid--two">
+            <article class="vh-card"><h3>Resource Database</h3><p>Find community resources available for your Conference area.</p></article>
+            <article class="vh-card"><h3>Conference Map</h3><p>Confirm service areas and find the correct Conference quickly.</p></article>
+            <article class="vh-card"><h3>Clothing Voucher</h3><p>Open the voucher tool with your Conference already filled in.</p></article>
+            <article class="vh-card"><h3>ShyftUnity / ServWare</h3><p>Go directly to case tools and neighbor records.</p></article>
+          </div>
+        </section>
+
+        <section class="vh-section-card" aria-labelledby="announcements-title">
+          <h2 id="announcements-title" class="vh-section-title">Announcements &amp; What’s New</h2>
+          <div class="vh-list">
+            <article class="vh-list-item">
+              <h3>District Update</h3>
+              <p>A new special-purpose grant is available for qualifying households this month.</p>
+            </article>
+            <article class="vh-list-item">
+              <h3>Training Reminder</h3>
+              <p>Home Visit refresher on Tuesday, April 14 at 6:00 PM.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="vh-section-card" aria-labelledby="documents-title">
+          <h2 id="documents-title" class="vh-section-title">Forms &amp; Documents</h2>
+          <div class="vh-grid vh-grid--two">
+            <article class="vh-card"><h3>President Essentials</h3><p>Meeting agendas, annual report, bylaws, mentoring, and leadership resources.</p></article>
+            <article class="vh-card"><h3>Conference Documents</h3><p>General forms, guidance, and documents for all members.</p></article>
+          </div>
+        </section>
+      </main>
+
+      <aside class="vh-aside">
+        <section class="vh-section-card" aria-labelledby="events-title">
+          <h2 id="events-title" class="vh-section-title">Upcoming Events</h2>
+          <div class="vh-list">
+            <article class="vh-list-item">
+              <h3>District Presidents Meeting</h3>
+              <p>Monday, April 20 • 6:30 PM • Meeting packet attached</p>
+              <div class="vh-actions"><a class="vh-btn" href="#">View details</a></div>
+            </article>
+            <article class="vh-list-item">
+              <h3>Formation Gathering</h3>
+              <p>Thursday, April 23 • 7:00 PM • Virtual option available</p>
+              <div class="vh-actions"><a class="vh-btn" href="#">View details</a></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="vh-section-card" aria-labelledby="help-title">
+          <h2 id="help-title" class="vh-section-title">Help</h2>
+          <p class="vh-help">Need help finding something? Call the district office or contact support for assistance.</p>
+        </section>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

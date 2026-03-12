@@ -1,0 +1,5 @@
+/* Mobile-first portal baseline. Intentionally light so the current theme remains dominant. */
+.svdp-dashboard, .svdp-document-detail, .svdp-event-detail { max-width: 72rem; margin: 0 auto; padding: 1rem; }
+.svdp-card { border: 1px solid rgba(0,0,0,.08); border-radius: 14px; padding: 1rem; margin-bottom: 1rem; background: #fff; }
+.svdp-button { display: inline-block; padding: .875rem 1rem; border-radius: 12px; text-decoration: none; }
+@media (min-width: 768px) { .svdp-dashboard { padding: 1.25rem; } }
