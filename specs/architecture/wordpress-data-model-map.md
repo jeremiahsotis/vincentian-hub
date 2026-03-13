@@ -1,142 +1,84 @@
 # Vincentian Hub WordPress Data Model Map
 
-This document is a **drift-prevention architecture artifact**.
+This document is a drift-prevention architecture artifact.
 
-It exists to make the data model explicit and stable for developers working in WordPress.  
-Its purpose is to prevent:
+It maps WordPress objects, meta, taxonomy, custom table usage, and resolver inputs so developers do not invent alternate schema or relationship logic.
 
-- accidental schema drift
-- inconsistent meta-key usage
-- resolver mismatches
-- CPT/meta/taxonomy confusion
-- duplicated or conflicting targeting logic
-
-This document lives at:
-
-`/specs/architecture/wordpress-data-model-map.md`
-
-## Status
-
-**Authoritative architecture companion**  
-This document must be treated as a practical implementation map for the data model.
-
-It does **not** override the contracts specification.  
-Instead, it operationalizes it.
-
-### Relationship to other documents
-
-- `specs/contracts-spec.md` is the binding contract for canonical names and semantics.
-- `specs/architecture/targeting-engine-rules.md` is the binding contract for resolver behavior.
-- `specs/architecture/system-diagram.md` defines system boundaries and integrations.
-- `specs/architecture/architecture.md` defines implementation structure and module responsibilities.
-- `specs/architecture/wordpress-data-model-map.md` defines how WordPress objects, meta, tables, and resolver inputs fit together.
-
----
-
-# 1. System-of-Record Model
+## 1. System-of-Record Model
 
 WordPress is the system of record for:
-
-- Conferences
-- Dashboard Items
-- Announcements
-- Documents
-- Events
-- User access state
-- User conference assignment
-- User role profiles
-- Event calendar exports
+- conferences
+- dashboard items
+- announcements
+- documents
+- events
+- user access state
+- conference assignment
+- role profiles
+- event calendar exports
 
 Google Drive is an upstream document source only.
 
----
+## 2. Core WordPress Object Types
 
-# 2. Core WordPress Object Types
+### Custom Post Types
+- `svdp_conf`
+- `svdp_dash_item`
+- `svdp_announcement`
+- `svdp_doc`
+- `svdp_event`
 
-## Custom Post Types
+## Canonical Meta Registration Ownership
 
-### `svdp_conf`
-Conference records
+The canonical implementation owner for registered object meta keys is:
 
-### `svdp_dash_item`
-Persistent dashboard tools, shortcuts, and entry points
+- `includes/meta-registration.php`
 
-### `svdp_announcement`
-Targeted announcements and updates
+The canonical implementation owner for user-meta-specific handling is:
 
-### `svdp_doc`
-Curated documents and file records
+- `includes/user-meta.php`
 
-### `svdp_event`
-Events with meeting packets and calendar export
+Rules:
+- canonical object meta keys must be registered centrally
+- user-meta-specific registration and normalization must not drift into unrelated modules
+- ad hoc meta-key creation inside feature modules is prohibited for contract-locked keys
 
-## Taxonomy
+### Taxonomy
+- `svdp_doc_cat`
 
-### `svdp_doc_cat`
-Editorial document categories
+### Custom Table
+- `{$wpdb->prefix}svdp_directory`
 
-## Custom Table
-
-### `wp_svdp_directory`
-Trusted imported identity directory for approval/assignment logic
-
-## User Object
-
+### User Object
 Standard WordPress users plus required `svdp_` user meta
 
----
-
-# 3. Object Relationship Map
+## 3. Object Relationship Map
 
 ```mermaid
 flowchart TD
+WPUser["WP User"] --> UserMeta["svdp_ user meta"]
+Directory["{$wpdb->prefix}svdp_directory"] --> WPUser
 
-WPUser["WP User"]
-UserMeta["svdp_ user meta"]
-Directory["wp_svdp_directory"]
+Conf["svdp_conf"] --> Resolver["Targeting Resolver"]
+Dash["svdp_dash_item"] --> Resolver
+Ann["svdp_announcement"] --> Resolver
+Doc["svdp_doc"] --> Resolver
+Event["svdp_event"] --> Resolver
 
-Conf["svdp_conf"]
-Dash["svdp_dash_item"]
-Ann["svdp_announcement"]
-Doc["svdp_doc"]
-Event["svdp_event"]
-DocCat["svdp_doc_cat"]
+Doc --> DocCat["svdp_doc_cat"]
 
-Resolver["Targeting Resolver"]
-Dashboard["Dashboard Renderer"]
-DocDelivery["Document Delivery"]
-Calendar["Calendar Export"]
-
-WPUser --> UserMeta
-Directory --> WPUser
-
-Conf --> Resolver
-Dash --> Resolver
-Ann --> Resolver
-Doc --> Resolver
-Event --> Resolver
-
-Doc --> DocCat
-
-Resolver --> Dashboard
-Resolver --> DocDelivery
-Resolver --> Calendar
+Resolver --> Dashboard["Dashboard Renderer"]
+Resolver --> DocDelivery["Document Delivery"]
+Resolver --> Calendar["Calendar Export"]
 
 Doc --> Event
 Ann --> Event
 Conf --> WPUser
 ```
 
----
+## 4. User Data Model
 
-# 4. User Data Model
-
-## Standard WordPress User
-
-Use core WordPress user record for identity shell.
-
-## Required user meta
-
+### Required user meta
 - `svdp_account_scope`
 - `svdp_approval_status`
 - `svdp_conference_id`
@@ -151,36 +93,48 @@ Use core WordPress user record for identity shell.
 - `svdp_calendar_feed_token_rotated_at`
 - `svdp_admin_notes`
 
-## User context object derived from meta
-
-The resolver should normalize user data into one context object:
+### Normalized user context
+The normalized user context schema is:
 
 - `user_id`
 - `approval_status`
 - `account_scope`
 - `conference_id`
-- `role_profiles[]`
-- `conference_flags[]`
+- `role_profiles`
+- `conference_flags`
 - `calendar_feed_token`
 
-This normalized context must be reused everywhere.
+This normalized context must be reused everywhere front-end visibility is evaluated.
 
-Do not rebuild user visibility logic ad hoc inside templates or controllers.
+### Conference Flags Derivation
 
----
+`conference_flags` in the normalized user context must be derived from the assigned conference object (`svdp_conf`) using the following meta fields:
 
-# 5. Conference Data Model
+- `svdp_conf_is_urban`
+- `svdp_conf_is_rural`
+- `svdp_conf_is_new_haven`
+- `svdp_conf_is_allen_county`
 
-## CPT: `svdp_conf`
+Derivation rules:
 
-Purpose:
-- canonical conference record
-- conference flags
-- linked existing page
-- resource/voucher context
+- Only conferences with `svdp_conf_active = true` may contribute flags.
+- Flags are normalized to the targeting values:
+  - `urban`
+  - `rural`
+  - `new_haven`
+  - `allen_county`
+
+The resolver must use these normalized values when evaluating `svdp_target_group_flags`.
+
+The normalized user context must **never query conference meta directly during evaluation**.  
+All resolver checks must use the pre-computed `conference_flags` field.
+
+## 5. Conference Data Model
+
+### CPT
+`svdp_conf`
 
 ### Key meta
-
 - `svdp_conf_code`
 - `svdp_conf_page_slug`
 - `svdp_conf_linked_page_id`
@@ -199,30 +153,15 @@ Purpose:
 - `svdp_conf_primary_contact_phone`
 - `svdp_conf_help_text_override`
 
-### Conference outputs used by the system
+## 6. Shared Targeting Block
 
-From a conference record the system derives:
-
-- conference ID
-- linked district-resources page
-- group flags
-- shortcode context
-- support/help text
-- conference-scoped dashboard context
-
----
-
-# 6. Shared Targeting Block
-
-The following fields are reused identically across:
-
+The following keys are reused identically across:
 - `svdp_dash_item`
 - `svdp_announcement`
 - `svdp_doc`
 - `svdp_event`
 
-## Canonical keys
-
+### Canonical keys
 - `svdp_scope`
 - `svdp_audience_profiles`
 - `svdp_target_conference_mode`
@@ -232,36 +171,14 @@ The following fields are reused identically across:
 - `svdp_publish_start`
 - `svdp_publish_end`
 
-## Critical implementation rule
+These keys are the resolver interface and must not drift.
 
-These keys are not editorial conveniences.  
-They are the resolver interface.
+## 7. Content Object Maps
 
-If a developer changes, aliases, duplicates, or partially reimplements these keys, the system is no longer trustworthy.
+### 7.1 Dashboard Items
+CPT: `svdp_dash_item`
 
-This is the main reason this document exists.
-
----
-
-# 7. Content Object Maps
-
-## 7.1 Dashboard Items
-
-### CPT
-`svdp_dash_item`
-
-### Purpose
-Persistent tools and shortcuts surfaced in dashboard sections
-
-### Key data
-- item type
-- destination/source
-- section placement
-- open mode
-- shared targeting block
-- featured/priority/sort
-
-### Unique keys
+Unique keys:
 - `svdp_item_type`
 - `svdp_item_url`
 - `svdp_item_shortcode`
@@ -275,24 +192,10 @@ Persistent tools and shortcuts surfaced in dashboard sections
 - `svdp_auto_inject_conference_context`
 - `svdp_featured`
 
----
+### 7.2 Announcements
+CPT: `svdp_announcement`
 
-## 7.2 Announcements
-
-### CPT
-`svdp_announcement`
-
-### Purpose
-Targeted updates, reminders, notices, grants, and banners
-
-### Key data
-- type
-- body
-- placement
-- CTA
-- shared targeting block
-
-### Unique keys
+Unique keys:
 - `svdp_announcement_type`
 - `svdp_priority`
 - `svdp_display_placement`
@@ -302,24 +205,10 @@ Targeted updates, reminders, notices, grants, and banners
 - `svdp_internal_notes`
 - `svdp_featured`
 
----
+### 7.3 Documents
+CPT: `svdp_doc`
 
-## 7.3 Documents
-
-### CPT
-`svdp_doc`
-
-### Purpose
-Curated file records that can appear in search, detail pages, dashboard items, and events
-
-### Key data
-- source
-- preview behavior
-- plain-language title
-- category
-- shared targeting block
-
-### Unique keys
+Unique keys:
 - `svdp_doc_source`
 - `svdp_drive_file_id`
 - `svdp_drive_parent_ref`
@@ -337,28 +226,13 @@ Curated file records that can appear in search, detail pages, dashboard items, a
 - `svdp_doc_force_download`
 - `svdp_doc_available_for_meeting_packets`
 
-### Taxonomy relationship
-`svdp_doc` → `svdp_doc_cat`
+Taxonomy relationship:
+- `svdp_doc` → `svdp_doc_cat`
 
----
+### 7.4 Events
+CPT: `svdp_event`
 
-## 7.4 Events
-
-### CPT
-`svdp_event`
-
-### Purpose
-Time-based targeted content with meeting packets and calendar export
-
-### Key data
-- scheduling
-- logistics
-- status
-- shared targeting block
-- packet/document relationships
-- export controls
-
-### Unique keys
+Unique keys:
 - `svdp_event_start`
 - `svdp_event_end`
 - `svdp_event_all_day`
@@ -383,27 +257,12 @@ Time-based targeted content with meeting packets and calendar export
 - `svdp_event_calendar_export_enabled`
 - `svdp_event_single_add_enabled`
 
-### Relationship model
-An event may reference:
-- meeting packet documents
-- related documents
-- related announcements
+## 8. Trusted Directory Model
 
-It does not own those objects; it links to them.
+### Custom table
+`{$wpdb->prefix}svdp_directory`
 
----
-
-# 8. Trusted Directory Model
-
-## Table: `wp_svdp_directory`
-
-Purpose:
-- trusted imported identities
-- auto-approval data
-- conference assignment defaults
-- role profile defaults
-
-### Columns
+Columns:
 - `id`
 - `first_name`
 - `last_name`
@@ -417,105 +276,60 @@ Purpose:
 - `updated_at`
 - `created_at`
 
-### Important rule
-This table is an identity-resolution aid.  
-It is not the long-term source of truth for active user context after account creation.
+Important rule:
+This table supports identity resolution and defaults. Once a user account exists, the WordPress user + user meta model is authoritative.
 
-Once a user account exists, the WordPress user + user meta model is authoritative.
+### Directory Data After User Creation
 
----
+Fields originating from the trusted directory table are **bootstrap inputs only**.
 
-# 9. Resolver Join Model
+After a WordPress user account exists:
 
-This is the most important architectural relationship in the system.
+- `default_profiles` from the directory table must not override `svdp_role_profiles`
+- `conference_id` from the directory table must not override `svdp_conference_id`
+- directory values must not be consulted during resolver evaluation
 
-## Inputs to resolver
+Authoritative runtime data must come from:
 
-### User side
-- approval status
-- account scope
-- conference ID
-- role profiles
-- conference flags
+- WordPress user meta
+- canonical object meta
+- normalized user context
 
-### Object side
-- scope
-- audience profiles
-- conference targeting mode
-- conference IDs
-- group flags
-- active state
-- publish window
+The directory table is therefore a **registration and import source**, not a runtime authority.
 
-## Output
+### District Account Clarification
+
+The trusted directory table may contain a `conference_id` value for operational or import reasons, but district users must not use that value for targeting after account creation.
+
+Contract rules:
+
+- if a user's `svdp_account_scope = district`, `conference_id` from the directory table is informational only
+- district user visibility and authorization must not depend on directory-table `conference_id`
+- normalized user context for district users must not derive conference targeting behavior from directory-table `conference_id`
+
+This prevents accidental leakage of conference-scoped logic into district user flows.
+
+## 9. Resolver Join Model
+
+### User-side inputs
+- `approval_status`
+- `account_scope`
+- `conference_id`
+- `role_profiles`
+- `conference_flags`
+
+### Object-side inputs
+- `svdp_scope`
+- `svdp_audience_profiles`
+- `svdp_target_conference_mode`
+- `svdp_target_conference_ids`
+- `svdp_target_group_flags`
+- `svdp_is_active`
+- `svdp_publish_start`
+- `svdp_publish_end`
+
+### Output
 - allow
 - deny
 
-Optional for logging/tests:
-- denial reason
-
-## Critical anti-drift rule
 If a feature needs visibility logic, it must call the resolver.
-
-It must not:
-- replicate partial checks
-- inspect meta keys directly in templates
-- hide unauthorized content only in CSS/JS
-- assume access from page context alone
-
----
-
-# 10. Page and Route Model
-
-## Existing conference pages
-Existing `/district-resources/<conference-name>` pages remain in place.
-
-Conference page → linked to `svdp_conf` → dashboard rendered dynamically
-
-## District dashboard
-Separate dashboard route/page for district users
-
-## Documents
-`/resource-library/<doc-slug>/`
-
-## Events
-`/events/<event-slug>/`
-
-## Calendar export
-- personalized feed
-- single-event ICS endpoint
-
-These routes all depend on the same user context + resolver model.
-
----
-
-# 11. Where This Should Be Referenced
-
-This document should be explicitly referenced in:
-
-## `specs/architecture/architecture.md`
-As a required companion to prevent WordPress schema drift
-
-## `specs/issues/SPEC.md`
-As a binding architecture constraint for Spec Kit input
-
-## Optional internal developer README notes
-As the quickest orientation artifact for how the WordPress data model is wired
-
-### Recommended reference wording
-
-> The WordPress Data Model Map is a drift-prevention architecture artifact.  
-> Developers must consult it before changing CPT structures, meta registration, user context, or resolver inputs.  
-> It exists to prevent schema drift and inconsistent visibility logic in a WordPress implementation.
-
----
-
-# 12. Final Rule
-
-If there is ever a conflict between:
-- a convenient implementation shortcut
-- and this mapped model
-
-the shortcut loses.
-
-This map exists specifically to stop WordPress-specific drift before it starts.
