@@ -1,3 +1,13 @@
 .codex
 .specify
 .DS_Store
+vendor/
+*.log
+*.cache
+*.env
+*.env.*
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
