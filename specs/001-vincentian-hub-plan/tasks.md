@@ -115,15 +115,15 @@
 
 ### PR Slice: Auth / Onboarding
 
-- [ ] T010 [P] [US1] Add failing auth/onboarding flow tests in `/tests/integration/test-auth-google-flow.php` and `/tests/integration/test-onboarding-access-states.php`
+- [X] T010 [P] [US1] Add failing auth/onboarding flow tests in `/tests/integration/AuthGoogleFlowTest.php` and `/tests/integration/OnboardingAccessStatesTest.php`
   Description: Define the expected behavior for approved, pending, disabled, conference-scope, and district-scope users before implementing Google auth and onboarding transitions.
-  Files/Modules Affected: `/tests/integration/test-auth-google-flow.php`, `/tests/integration/test-onboarding-access-states.php`
+  Files/Modules Affected: `/tests/integration/AuthGoogleFlowTest.php`, `/tests/integration/OnboardingAccessStatesTest.php`
   Dependencies: T009
   Acceptance Criteria: Tests cover login, onboarding, pending-access, and denial flows using canonical approval/account-scope enums; tests fail until auth/onboarding is implemented.
   PR Slice Grouping: Auth / onboarding
   Contract/Risk Checks: Contract check: approval/account-scope enums match `/specs/contracts-spec.md`. Security check: pending and disabled users are denied protected portal access.
 
-- [ ] T011 [US1] Implement Google auth and onboarding state handling in `/includes/auth-google.php`, `/includes/onboarding.php`, `/templates/login.php`, `/templates/onboarding.php`, and `/templates/pending-access.php`
+- [X] T011 [US1] Implement Google auth and onboarding state handling in `/includes/auth-google.php`, `/includes/onboarding.php`, `/templates/login.php`, `/templates/onboarding.php`, and `/templates/pending-access.php`
   Description: Add the Google OAuth entry flow, post-auth onboarding state transitions, and the three gated templates needed before dashboard access exists.
   Files/Modules Affected: `/includes/auth-google.php`, `/includes/onboarding.php`, `/templates/login.php`, `/templates/onboarding.php`, `/templates/pending-access.php`, `/includes/user-meta.php`
   Dependencies: T010

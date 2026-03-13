@@ -79,9 +79,45 @@ if (!function_exists('current_user_can')) {
     }
 }
 
+if (!function_exists('update_user_meta')) {
+    function update_user_meta($user_id, $key, $value) {
+        if (!isset($GLOBALS['svdp_test_user_meta'][$user_id])) {
+            $GLOBALS['svdp_test_user_meta'][$user_id] = [];
+        }
+
+        $GLOBALS['svdp_test_user_meta'][$user_id][$key] = $value;
+
+        return true;
+    }
+}
+
 if (!function_exists('sanitize_text_field')) {
     function sanitize_text_field($value) {
         return trim((string) $value);
+    }
+}
+
+if (!function_exists('esc_html')) {
+    function esc_html($value) {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+    }
+}
+
+if (!function_exists('esc_attr')) {
+    function esc_attr($value) {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+    }
+}
+
+if (!function_exists('esc_url')) {
+    function esc_url($value) {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+    }
+}
+
+if (!function_exists('wp_kses_post')) {
+    function wp_kses_post($value) {
+        return (string) $value;
     }
 }
 
@@ -168,6 +204,8 @@ require_once dirname(__DIR__) . '/includes/taxonomies.php';
 require_once dirname(__DIR__) . '/includes/meta-registration.php';
 require_once dirname(__DIR__) . '/includes/user-meta.php';
 require_once dirname(__DIR__) . '/includes/directory-table.php';
+require_once dirname(__DIR__) . '/includes/auth-google.php';
+require_once dirname(__DIR__) . '/includes/onboarding.php';
 require_once dirname(__DIR__) . '/includes/conferences.php';
 require_once dirname(__DIR__) . '/includes/targeting-resolver.php';
 require_once dirname(__DIR__) . '/includes/permissions.php';
