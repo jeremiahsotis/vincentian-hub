@@ -87,15 +87,15 @@
 
 ### PR Slice: Targeting Resolver
 
-- [ ] T007 [P] [US1] Add failing resolver tests in `/tests/unit/test-targeting-resolver.php` and `/tests/integration/test-normalized-user-context.php`
+- [X] T007 [P] [US1] Add failing resolver tests in `/tests/unit/TargetingResolverTest.php` and `/tests/integration/NormalizedUserContextTest.php`
   Description: Lock the seven-step resolver order, normalized user context shape, empty-audience behavior, scope handling, and group-flag targeting before implementing resolver code.
-  Files/Modules Affected: `/tests/unit/test-targeting-resolver.php`, `/tests/integration/test-normalized-user-context.php`
+  Files/Modules Affected: `/tests/unit/TargetingResolverTest.php`, `/tests/integration/NormalizedUserContextTest.php`
   Dependencies: T005, T006
   Acceptance Criteria: Tests cover user existence, approval status, active state, publish window, scope match, audience intersection, and conference/district targeting match; tests initially fail because resolver implementation does not exist yet.
   PR Slice Grouping: Targeting resolver
   Contract/Risk Checks: Contract check: resolver order matches `/specs/architecture/targeting-engine-rules.md`. Security check: no partial or alternate resolver implementation is introduced.
 
-- [ ] T008 [US1] Implement normalized user context and resolver authority in `/includes/targeting-resolver.php`
+- [X] T008 [US1] Implement normalized user context and resolver authority in `/includes/targeting-resolver.php`
   Description: Build the canonical context schema and allow/deny resolver helpers as the only front-end visibility authority.
   Files/Modules Affected: `/includes/targeting-resolver.php`
   Dependencies: T007
@@ -103,7 +103,7 @@
   PR Slice Grouping: Targeting resolver
   Contract/Risk Checks: Contract check: canonical normalized context schema only. Security check: no alternate front-end visibility checks are added elsewhere.
 
-- [ ] T009 [US1] Implement shared permission helpers in `/includes/permissions.php` and conference-flag support in `/includes/conferences.php`
+- [X] T009 [US1] Implement shared permission helpers in `/includes/permissions.php` and conference-flag support in `/includes/conferences.php`
   Description: Add the non-resolver permission helpers and conference-flag derivation support needed by routes and protected delivery entry points.
   Files/Modules Affected: `/includes/permissions.php`, `/includes/conferences.php`
   Dependencies: T008

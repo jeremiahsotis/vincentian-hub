@@ -108,6 +108,51 @@ if (!function_exists('flush_rewrite_rules')) {
     }
 }
 
+$GLOBALS['svdp_test_user_meta'] = [];
+$GLOBALS['svdp_test_post_meta'] = [];
+$GLOBALS['svdp_test_users'] = [];
+$GLOBALS['svdp_test_now'] = null;
+
+if (!function_exists('get_user_meta')) {
+    function get_user_meta($user_id, $key = '', $single = false) {
+        $meta = $GLOBALS['svdp_test_user_meta'][$user_id] ?? [];
+
+        if ($key === '') {
+            return $meta;
+        }
+
+        $value = $meta[$key] ?? ($single ? '' : []);
+
+        return $single ? $value : [$value];
+    }
+}
+
+if (!function_exists('get_post_meta')) {
+    function get_post_meta($post_id, $key = '', $single = false) {
+        $meta = $GLOBALS['svdp_test_post_meta'][$post_id] ?? [];
+
+        if ($key === '') {
+            return $meta;
+        }
+
+        $value = $meta[$key] ?? ($single ? '' : []);
+
+        return $single ? $value : [$value];
+    }
+}
+
+if (!function_exists('get_userdata')) {
+    function get_userdata($user_id) {
+        return $GLOBALS['svdp_test_users'][$user_id] ?? false;
+    }
+}
+
+if (!function_exists('current_time')) {
+    function current_time(...$args) {
+        return $GLOBALS['svdp_test_now'] ?? gmdate('Y-m-d H:i:s');
+    }
+}
+
 $GLOBALS['wpdb'] = new class {
     public $prefix = 'wp_';
 
@@ -123,4 +168,7 @@ require_once dirname(__DIR__) . '/includes/taxonomies.php';
 require_once dirname(__DIR__) . '/includes/meta-registration.php';
 require_once dirname(__DIR__) . '/includes/user-meta.php';
 require_once dirname(__DIR__) . '/includes/directory-table.php';
+require_once dirname(__DIR__) . '/includes/conferences.php';
+require_once dirname(__DIR__) . '/includes/targeting-resolver.php';
+require_once dirname(__DIR__) . '/includes/permissions.php';
 require_once dirname(__DIR__) . '/includes/bootstrap.php';
