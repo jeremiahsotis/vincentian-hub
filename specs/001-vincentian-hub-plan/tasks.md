@@ -211,15 +211,15 @@
 
 ### PR Slice: Documents
 
-- [ ] T019 [P] [US2] Add failing document contract and security tests in `/tests/contract/test-document-routes.php` and `/tests/integration/test-document-access.php`
+- [X] T019 [P] [US2] Add failing document contract and security tests in `/tests/integration/DocumentAccessTest.php`
   Description: Lock the canonical document route, detail/preview/download security behavior, and taxonomy usage before implementing protected document delivery.
-  Files/Modules Affected: `/tests/contract/test-document-routes.php`, `/tests/integration/test-document-access.php`
+  Files/Modules Affected: `/tests/integration/DocumentAccessTest.php`
   Dependencies: T016
   Acceptance Criteria: Tests cover `/resource-library/<doc-slug>/`, protected preview/download enforcement, and `svdp_doc_cat` usage; tests fail until delivery logic exists.
   PR Slice Grouping: Documents
   Contract/Risk Checks: Contract check: canonical document route and taxonomy only. Security check: document access must not leak through detail, preview, or download.
 
-- [ ] T020 [US2] Implement protected document delivery in `/includes/documents.php`, `/includes/routes.php`, and `/templates/document-detail.php`
+- [X] T020 [US2] Implement protected document delivery in `/includes/documents.php`, `/includes/routes.php`, and `/templates/document-detail.php`
   Description: Add document detail, preview, and download behavior under centralized route ownership, using server-side resolver checks before returning protected content.
   Files/Modules Affected: `/includes/documents.php`, `/includes/routes.php`, `/templates/document-detail.php`
   Dependencies: T019
