@@ -45,6 +45,7 @@ foreach (get_include_files() as $file) {
 function bootstrap() {
     add_action('init', __NAMESPACE__ . '\\register_foundation_components', 5);
     add_action('init', __NAMESPACE__ . '\\maybe_upgrade_foundation', 1);
+    add_action('admin_menu', __NAMESPACE__ . '\\register_admin_menus');
 }
 
 function register_foundation_components() {
@@ -56,6 +57,7 @@ function register_foundation_components() {
 
 function activate_plugin() {
     register_roles();
+    grant_administrator_capabilities();
     register_post_types();
     register_taxonomies();
     register_object_meta();
@@ -73,10 +75,12 @@ function maybe_upgrade_foundation() {
     $current_version = get_option(FOUNDATION_VERSION_OPTION);
 
     if ($current_version === SVDP_PORTAL_VERSION) {
+        grant_administrator_capabilities();
         return;
     }
 
     register_roles();
+    grant_administrator_capabilities();
     create_directory_table();
     update_option(FOUNDATION_VERSION_OPTION, SVDP_PORTAL_VERSION);
 }

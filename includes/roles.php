@@ -22,6 +22,18 @@ function register_roles() {
     }
 }
 
+function grant_administrator_capabilities() {
+    $administrator = get_role('administrator');
+
+    if (!$administrator) {
+        return;
+    }
+
+    foreach (get_all_capabilities() as $capability) {
+        $administrator->add_cap($capability);
+    }
+}
+
 function get_capabilities_for_role($role) {
     $matrix = get_role_capability_matrix();
     $capabilities = [];

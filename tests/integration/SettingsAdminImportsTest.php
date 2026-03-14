@@ -2,9 +2,11 @@
 
 use PHPUnit\Framework\TestCase;
 use function VincentianHub\get_admin_menu_definitions;
+use function VincentianHub\get_all_capabilities;
 use function VincentianHub\get_branding_logo_context;
 use function VincentianHub\get_branding_logo_option_key;
 use function VincentianHub\get_branding_settings_page_slug;
+use function VincentianHub\grant_administrator_capabilities;
 use function VincentianHub\import_drive_document_record;
 use function VincentianHub\register_admin_menus;
 use function VincentianHub\update_branding_logo_attachment_id;
@@ -24,6 +26,27 @@ final class SettingsAdminImportsTest extends TestCase {
         $GLOBALS['svdp_test_current_user_caps'] = [];
         $GLOBALS['svdp_test_options'] = [];
         $GLOBALS['svdp_test_next_post_id'] = 2000;
+        $GLOBALS['svdp_test_roles'] = [
+            'administrator' => new class('administrator', 'Administrator', []) {
+                public $name;
+                public $label;
+                public $capabilities;
+
+                public function __construct($name, $label, array $capabilities) {
+                    $this->name = $name;
+                    $this->label = $label;
+                    $this->capabilities = $capabilities;
+                }
+
+                public function add_cap($capability, $grant = true) {
+                    $this->capabilities[(string) $capability] = (bool) $grant;
+                }
+
+                public function remove_cap($capability) {
+                    unset($this->capabilities[(string) $capability]);
+                }
+            },
+        ];
     }
 
     public function test_branding_setting_key_and_logo_fallback_are_canonical(): void {
@@ -64,6 +87,18 @@ final class SettingsAdminImportsTest extends TestCase {
         register_admin_menus();
 
         $this->assertCount(3, $GLOBALS['svdp_test_admin_menus']);
+    }
+
+    public function test_activation_grants_portal_capabilities_to_wordpress_administrator(): void {
+        grant_administrator_capabilities();
+
+        $administrator = get_role('administrator');
+
+        $this->assertNotNull($administrator);
+
+        foreach (get_all_capabilities() as $capability) {
+            $this->assertTrue($administrator->capabilities[$capability] ?? false, $capability);
+        }
     }
 
     public function test_drive_import_behavior_is_capability_gated_and_persists_canonical_storage(): void {
