@@ -135,15 +135,15 @@
 
 ### PR Slice: Conferences / Canonical Context
 
-- [ ] T012 [P] [US1] Add failing conference context tests in `/tests/unit/test-conferences.php` and `/tests/integration/test-shortcode-context.php`
+- [X] T012 [P] [US1] Add failing conference context tests in `/tests/unit/ConferenceContextTest.php` and `/tests/integration/ShortcodeContextTest.php`
   Description: Lock conference lookup, page-slug resolution, active-flag derivation, and shortcode context behavior before implementing conference helpers.
-  Files/Modules Affected: `/tests/unit/test-conferences.php`, `/tests/integration/test-shortcode-context.php`
+  Files/Modules Affected: `/tests/unit/ConferenceContextTest.php`, `/tests/integration/ShortcodeContextTest.php`
   Dependencies: T011
   Acceptance Criteria: Tests assert `svdp_conf_page_slug` route resolution, normalized group-flag derivation, linked-page mapping, and shortcode-context injection from canonical conference context; tests fail until implementation exists.
   PR Slice Grouping: Conferences / canonical context
   Contract/Risk Checks: Contract check: conference route token is `svdp_conf_page_slug`. Security check: no request-param-based conference targeting.
 
-- [ ] T013 [US1] Implement conference helpers and shortcode context in `/includes/conferences.php` and `/includes/shortcode-context.php`
+- [X] T013 [US1] Implement conference helpers and shortcode context in `/includes/conferences.php` and `/includes/shortcode-context.php`
   Description: Build the conference model, linked-page mapping, route-token lookup, and shortcode context injection needed by the dashboard and future content routes.
   Files/Modules Affected: `/includes/conferences.php`, `/includes/shortcode-context.php`
   Dependencies: T012

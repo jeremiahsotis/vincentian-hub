@@ -147,6 +147,7 @@ if (!function_exists('flush_rewrite_rules')) {
 $GLOBALS['svdp_test_user_meta'] = [];
 $GLOBALS['svdp_test_post_meta'] = [];
 $GLOBALS['svdp_test_users'] = [];
+$GLOBALS['svdp_test_posts'] = [];
 $GLOBALS['svdp_test_now'] = null;
 
 if (!function_exists('get_user_meta')) {
@@ -183,6 +184,43 @@ if (!function_exists('get_userdata')) {
     }
 }
 
+if (!function_exists('get_post')) {
+    function get_post($post_id) {
+        return $GLOBALS['svdp_test_posts'][$post_id] ?? null;
+    }
+}
+
+if (!function_exists('get_posts')) {
+    function get_posts(array $args = []) {
+        $posts = array_values($GLOBALS['svdp_test_posts']);
+        $post_type = $args['post_type'] ?? null;
+        $meta_key = $args['meta_key'] ?? null;
+        $meta_value = $args['meta_value'] ?? null;
+        $post_status = $args['post_status'] ?? null;
+
+        $posts = array_filter($posts, function ($post) use ($post_type, $post_status, $meta_key, $meta_value) {
+            if ($post_type !== null && (($post->post_type ?? '') !== $post_type)) {
+                return false;
+            }
+
+            if ($post_status !== null && (($post->post_status ?? '') !== $post_status)) {
+                return false;
+            }
+
+            if ($meta_key !== null) {
+                $value = get_post_meta((int) $post->ID, (string) $meta_key, true);
+                if ((string) $value !== (string) $meta_value) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        return array_values($posts);
+    }
+}
+
 if (!function_exists('current_time')) {
     function current_time(...$args) {
         return $GLOBALS['svdp_test_now'] ?? gmdate('Y-m-d H:i:s');
@@ -209,4 +247,5 @@ require_once dirname(__DIR__) . '/includes/onboarding.php';
 require_once dirname(__DIR__) . '/includes/conferences.php';
 require_once dirname(__DIR__) . '/includes/targeting-resolver.php';
 require_once dirname(__DIR__) . '/includes/permissions.php';
+require_once dirname(__DIR__) . '/includes/shortcode-context.php';
 require_once dirname(__DIR__) . '/includes/bootstrap.php';
