@@ -1,5 +1,51 @@
 /* Mobile-first portal baseline. Intentionally light so the current theme remains dominant. */
-.svdp-dashboard, .svdp-document-detail, .svdp-event-detail { max-width: 72rem; margin: 0 auto; padding: 1rem; }
-.svdp-card { border: 1px solid rgba(0,0,0,.08); border-radius: 14px; padding: 1rem; margin-bottom: 1rem; background: #fff; }
-.svdp-button { display: inline-block; padding: .875rem 1rem; border-radius: 12px; text-decoration: none; }
-@media (min-width: 768px) { .svdp-dashboard { padding: 1.25rem; } }
+.svdp-dashboard,
+.svdp-document-detail,
+.svdp-event-detail {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.svdp-dashboard-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.875rem;
+}
+
+.svdp-card {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    padding: 1rem;
+    background: #fff;
+}
+
+.svdp-dashboard h1,
+.svdp-dashboard h2 {
+    margin-top: 0;
+}
+
+.svdp-dashboard-route-token {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    opacity: 0.75;
+}
+
+.svdp-button {
+    display: inline-block;
+    padding: 0.875rem 1rem;
+    border-radius: 12px;
+    text-decoration: none;
+}
+
+@media (min-width: 768px) {
+    .svdp-dashboard {
+        padding: 1.25rem;
+    }
+
+    .svdp-dashboard-items {
+        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    }
+}

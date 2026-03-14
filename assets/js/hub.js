@@ -1,1 +1,1 @@
-// Portal JS scaffold placeholder.
+document.documentElement.classList.add('svdp-hub-ready');
