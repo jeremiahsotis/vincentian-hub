@@ -155,15 +155,15 @@
 
 ### PR Slice: Dashboard Shell and Routes
 
-- [ ] T014 [P] [US1] Add failing route-security and dashboard query/render tests in `/tests/integration/test-dashboard-routes.php`, `/tests/integration/test-dashboard-security.php`, and `/tests/unit/test-dashboard-query.php`
+- [X] T014 [P] [US1] Add failing route-security and dashboard query/render tests in `/tests/integration/DashboardRoutesTest.php`, `/tests/integration/DashboardSecurityTest.php`, and `/tests/unit/DashboardQueryTest.php`
   Description: Define the expected behavior for district and conference dashboard routes, route-level resolver checks, and query/render separation before implementing the dashboard shell.
-  Files/Modules Affected: `/tests/integration/test-dashboard-routes.php`, `/tests/integration/test-dashboard-security.php`, `/tests/unit/test-dashboard-query.php`
+  Files/Modules Affected: `/tests/integration/DashboardRoutesTest.php`, `/tests/integration/DashboardSecurityTest.php`, `/tests/unit/DashboardQueryTest.php`
   Dependencies: T013
   Acceptance Criteria: Tests assert canonical route patterns, route-level permission enforcement, visible dataset assembly through the resolver, and template-only rendering behavior; tests fail until the slice is implemented.
   PR Slice Grouping: Dashboard shell and routes
   Contract/Risk Checks: Contract check: canonical dashboard routes only. Security check: templates do not become auth/query layers.
 
-- [ ] T015 [US1] Implement route registration and protected dashboard entry points in `/includes/routes.php`
+- [X] T015 [US1] Implement route registration and protected dashboard entry points in `/includes/routes.php`
   Description: Register the conference and district dashboard routes from the canonical routing layer and enforce server-side permission checks before handing off to dashboard query/render code.
   Files/Modules Affected: `/includes/routes.php`
   Dependencies: T014
@@ -171,7 +171,7 @@
   PR Slice Grouping: Dashboard shell and routes
   Contract/Risk Checks: Contract check: route ownership remains in `/includes/routes.php`. Security check: protected front-end routes are not registered from feature modules.
 
-- [ ] T016 [US1] Implement dashboard dataset assembly and rendering in `/includes/dashboard-query.php`, `/includes/dashboard-renderer.php`, `/templates/dashboard-conference.php`, `/templates/dashboard-district.php`, `/assets/css/hub.css`, and `/assets/js/hub.js`
+- [X] T016 [US1] Implement dashboard dataset assembly and rendering in `/includes/dashboard-query.php`, `/includes/dashboard-renderer.php`, `/templates/dashboard-conference.php`, `/templates/dashboard-district.php`, `/assets/css/hub.css`, and `/assets/js/hub.js`
   Description: Build the visible dashboard dataset layer, renderer orchestration, and minimal theme-aligned templates/assets for conference and district dashboards.
   Files/Modules Affected: `/includes/dashboard-query.php`, `/includes/dashboard-renderer.php`, `/templates/dashboard-conference.php`, `/templates/dashboard-district.php`, `/assets/css/hub.css`, `/assets/js/hub.js`
   Dependencies: T015

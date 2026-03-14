@@ -33,6 +33,25 @@ if (!function_exists('add_action')) {
     }
 }
 
+if (!function_exists('add_rewrite_tag')) {
+    function add_rewrite_tag($tag, $regex) {
+        $GLOBALS['svdp_test_rewrite_tags'][] = [
+            'tag' => $tag,
+            'regex' => $regex,
+        ];
+    }
+}
+
+if (!function_exists('add_rewrite_rule')) {
+    function add_rewrite_rule($regex, $query, $after = 'bottom') {
+        $GLOBALS['svdp_test_rewrite_rules'][] = [
+            'regex' => $regex,
+            'query' => $query,
+            'after' => $after,
+        ];
+    }
+}
+
 if (!function_exists('register_activation_hook')) {
     function register_activation_hook() {
     }
@@ -149,6 +168,8 @@ $GLOBALS['svdp_test_post_meta'] = [];
 $GLOBALS['svdp_test_users'] = [];
 $GLOBALS['svdp_test_posts'] = [];
 $GLOBALS['svdp_test_now'] = null;
+$GLOBALS['svdp_test_rewrite_tags'] = [];
+$GLOBALS['svdp_test_rewrite_rules'] = [];
 
 if (!function_exists('get_user_meta')) {
     function get_user_meta($user_id, $key = '', $single = false) {
@@ -248,4 +269,7 @@ require_once dirname(__DIR__) . '/includes/conferences.php';
 require_once dirname(__DIR__) . '/includes/targeting-resolver.php';
 require_once dirname(__DIR__) . '/includes/permissions.php';
 require_once dirname(__DIR__) . '/includes/shortcode-context.php';
+require_once dirname(__DIR__) . '/includes/dashboard-query.php';
+require_once dirname(__DIR__) . '/includes/dashboard-renderer.php';
+require_once dirname(__DIR__) . '/includes/routes.php';
 require_once dirname(__DIR__) . '/includes/bootstrap.php';
