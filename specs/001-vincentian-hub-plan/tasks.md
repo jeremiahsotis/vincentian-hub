@@ -247,15 +247,15 @@
 
 ### PR Slice: Events / Calendar Export
 
-- [ ] T022 [P] [US3] Add failing event and calendar-export tests in `/tests/contract/test-event-routes.php`, `/tests/integration/test-event-access.php`, and `/tests/integration/test-calendar-feed-access.php`
+- [X] T022 [P] [US3] Add failing event and calendar-export tests in `/tests/integration/EventCalendarAccessTest.php`
   Description: Lock the canonical event routes, feed token handling, ICS download behavior, and resolver enforcement before implementing event detail and calendar export features.
-  Files/Modules Affected: `/tests/contract/test-event-routes.php`, `/tests/integration/test-event-access.php`, `/tests/integration/test-calendar-feed-access.php`
+  Files/Modules Affected: `/tests/integration/EventCalendarAccessTest.php`
   Dependencies: T021
   Acceptance Criteria: Tests cover `/events/<event-slug>/`, `/portal-calendar/feed/<token>/`, and `/portal-calendar/event/<event_id>/download/`; tests assert server-side visibility checks before data is returned; tests fail until implementation exists.
   PR Slice Grouping: Events / calendar export
   Contract/Risk Checks: Contract check: canonical event/feed/export routes only. Security check: no feed/export leakage.
 
-- [ ] T023 [US3] Implement protected event detail behavior in `/includes/events.php`, `/includes/routes.php`, and `/templates/event-detail.php`
+- [X] T023 [US3] Implement protected event detail behavior in `/includes/events.php`, `/includes/routes.php`, and `/templates/event-detail.php`
   Description: Add event detail queries, related-object behavior, and route-handled event rendering while preserving centralized route ownership and resolver enforcement.
   Files/Modules Affected: `/includes/events.php`, `/includes/routes.php`, `/templates/event-detail.php`
   Dependencies: T022
@@ -263,7 +263,7 @@
   PR Slice Grouping: Events / calendar export
   Contract/Risk Checks: Contract check: canonical event relationships and meta keys only. Security check: event modules do not bypass routing/security entry points.
 
-- [ ] T024 [US3] Implement calendar feed and single-event ICS export in `/includes/calendar-ics.php`, `/includes/routes.php`, and `/tests/integration/test-calendar-ics.php`
+- [X] T024 [US3] Implement calendar feed and single-event ICS export in `/includes/calendar-ics.php`, `/includes/routes.php`, and `/tests/integration/EventCalendarAccessTest.php`
   Description: Add the protected calendar feed and single-event export behavior tied to canonical user token and event export controls.
   Files/Modules Affected: `/includes/calendar-ics.php`, `/includes/routes.php`, `/tests/integration/test-calendar-ics.php`
   Dependencies: T023
