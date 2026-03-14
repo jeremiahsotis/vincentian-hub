@@ -275,21 +275,21 @@
 
 ### PR Slice: Settings / Admin Polish
 
-- [ ] T025 [P] [US3] Add failing settings/admin access tests in `/tests/integration/test-settings-access.php` and `/tests/integration/test-admin-menu-access.php`
+- [X] T025 [P] [US3] Add failing settings/admin access tests in `/tests/integration/SettingsAdminImportsTest.php`
   Description: Lock the expected admin capability boundaries and branding setting access before polishing settings and admin menu behavior.
-  Files/Modules Affected: `/tests/integration/test-settings-access.php`, `/tests/integration/test-admin-menu-access.php`
+  Files/Modules Affected: `/tests/integration/SettingsAdminImportsTest.php`
   Dependencies: T006
-  Acceptance Criteria: Tests verify district-admin-only branding/settings access; tests verify only district admins can manage the `vincentian_hub_logo_attachment_id` branding setting and related upload flow; tests confirm non-admin roles cannot reach protected admin screens; tests fail before implementation is completed.
+  Acceptance Criteria: Tests verify district-admin-only branding/settings access; tests verify only district admins can manage the `vincentian_hub_logo_attachment_id` branding setting and related upload flow; tests verify drive-import behavior is limited to `svdp_manage_drive_imports`; tests confirm non-admin roles cannot reach protected admin screens or import actions.
   PR Slice Grouping: Settings / admin polish
   Contract/Risk Checks: Contract check: branding/admin access matches the capability matrix. Security check: no capability leakage into non-admin roles.
 
-- [ ] T026 [US3] Finalize branding, settings, and admin menu behavior in `/includes/settings.php`, `/includes/admin-menu.php`, and `/assets/css/hub.css`
-  Description: Complete the logo-setting contract, admin-menu capability wiring, and last-mile UI polish while staying within the current theme baseline.
-  Files/Modules Affected: `/includes/settings.php`, `/includes/admin-menu.php`, `/assets/css/hub.css`
+- [X] T026 [US3] Finalize branding, settings, admin menu, and Drive import behavior in `/includes/settings.php`, `/includes/admin-menu.php`, and `/includes/drive-imports.php`
+  Description: Complete the logo-setting contract, admin-menu capability wiring, and Drive import authority boundaries without changing the current front-end security model.
+  Files/Modules Affected: `/includes/settings.php`, `/includes/admin-menu.php`, `/includes/drive-imports.php`
   Dependencies: T025
-  Acceptance Criteria: `vincentian_hub_logo_attachment_id` is the exact setting key used; district admins can access branding/settings screens and manage the branding/logo setting; non-admin roles are denied settings/admin access and branding/logo management; UI polish does not introduce a redesign beyond the current theme baseline.
+  Acceptance Criteria: `vincentian_hub_logo_attachment_id` is the exact setting key used; district admins can access branding/settings screens and manage the branding/logo setting; drive import behavior is gated by `svdp_manage_drive_imports`; imported Drive records feed canonical WordPress object/meta storage; Google Drive remains an upstream source rather than a runtime authority; non-admin roles are denied settings/admin access, branding/logo management, and import actions.
   PR Slice Grouping: Settings / admin polish
-  Contract/Risk Checks: Contract check: branding setting key and capability boundaries remain canonical. Security check: settings/admin code is not used as a substitute for front-end targeting.
+  Contract/Risk Checks: Contract check: branding setting key, Drive meta keys, and capability boundaries remain canonical. Security check: settings/admin/import code is not used as a substitute for front-end targeting or content visibility authority.
 
 **Checkpoint**: User Story 3 is complete when event/calendar exports and admin branding/settings are protected, test-covered, and ready for the final PR merge.
 
