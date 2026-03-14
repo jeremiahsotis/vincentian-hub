@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 
 add_action('init', __NAMESPACE__ . '\\register_dashboard_routes', 20);
 add_action('init', __NAMESPACE__ . '\\register_document_routes', 21);
+add_action('init', __NAMESPACE__ . '\\register_event_and_calendar_routes', 22);
 
 function register_dashboard_routes() {
     add_rewrite_tag('%svdp_dashboard_kind%', '([^&]+)');
@@ -32,6 +33,30 @@ function register_document_routes() {
     add_rewrite_rule(
         '^resource-library/([^/]+)/?$',
         'index.php?svdp_doc_slug=$matches[1]',
+        'top'
+    );
+}
+
+function register_event_and_calendar_routes() {
+    add_rewrite_tag('%svdp_event_slug%', '([^&]+)');
+    add_rewrite_tag('%svdp_calendar_token%', '([^&]+)');
+    add_rewrite_tag('%svdp_calendar_event_id%', '([0-9]+)');
+
+    add_rewrite_rule(
+        '^events/([^/]+)/?$',
+        'index.php?svdp_event_slug=$matches[1]',
+        'top'
+    );
+
+    add_rewrite_rule(
+        '^portal-calendar/feed/([^/]+)/?$',
+        'index.php?svdp_calendar_token=$matches[1]',
+        'top'
+    );
+
+    add_rewrite_rule(
+        '^portal-calendar/event/([0-9]+)/download/?$',
+        'index.php?svdp_calendar_event_id=$matches[1]',
         'top'
     );
 }
@@ -69,6 +94,45 @@ function resolve_document_route_from_path($path) {
         return [
             'doc_slug' => sanitize_text_field($matches[1]),
             'document_action' => sanitize_text_field((string) ($query['document_action'] ?? 'detail')),
+        ];
+    }
+
+    return [];
+}
+
+function resolve_event_route_from_path($path) {
+    if (preg_match('#^/events/([^/]+)/?$#', (string) $path, $matches)) {
+        return [
+            'event_slug' => sanitize_text_field($matches[1]),
+        ];
+    }
+
+    return [];
+}
+
+function resolve_calendar_feed_route_from_path($path) {
+    if (preg_match('#^/portal-calendar/feed/([^/]+)/?$#', (string) $path, $matches)) {
+        return [
+            'token' => sanitize_text_field($matches[1]),
+        ];
+    }
+
+    return [];
+}
+
+function resolve_event_export_route_from_path($path) {
+    $parts = parse_url((string) $path);
+    $route_path = $parts['path'] ?? '';
+    $query = [];
+
+    if (!empty($parts['query'])) {
+        parse_str($parts['query'], $query);
+    }
+
+    if (preg_match('#^/portal-calendar/event/([0-9]+)/download/?$#', $route_path, $matches)) {
+        return [
+            'event_id' => (int) $matches[1],
+            'token' => sanitize_text_field((string) ($query['token'] ?? '')),
         ];
     }
 
@@ -202,4 +266,44 @@ function handle_document_route_request($user, array $route) {
     }
 
     return build_document_delivery_response((int) $document->ID, $route['document_action'] ?? 'detail');
+}
+
+function handle_event_route_request($user, array $route) {
+    $template = get_portal_gate_template($user);
+    if ($template !== '') {
+        $context = get_gate_template_context($user);
+
+        return [
+            'status' => 403,
+            'template' => $template,
+            'body' => render_gate_template_response($template, $context),
+        ];
+    }
+
+    $event = get_event_post_by_slug($route['event_slug'] ?? '');
+    if (!$event || !isset($event->ID)) {
+        return [
+            'status' => 404,
+            'template' => 'not-found',
+            'body' => '',
+        ];
+    }
+
+    if (!user_can_access_event($user, (int) $event->ID)) {
+        return [
+            'status' => 403,
+            'template' => 'forbidden',
+            'body' => '',
+        ];
+    }
+
+    return build_event_detail_response((int) $event->ID);
+}
+
+function handle_calendar_feed_request(array $route) {
+    return build_calendar_feed_response($route['token'] ?? '');
+}
+
+function handle_event_export_request(array $route) {
+    return build_single_event_export_response((int) ($route['event_id'] ?? 0), $route['token'] ?? '');
 }
