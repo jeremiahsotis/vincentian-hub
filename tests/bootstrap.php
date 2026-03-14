@@ -29,7 +29,13 @@ if (!function_exists('plugin_dir_url')) {
 }
 
 if (!function_exists('add_action')) {
-    function add_action() {
+    function add_action($hook_name, $callback, $priority = 10, $accepted_args = 1) {
+        $GLOBALS['svdp_test_actions'][] = [
+            'hook_name' => $hook_name,
+            'callback' => $callback,
+            'priority' => $priority,
+            'accepted_args' => $accepted_args,
+        ];
     }
 }
 
@@ -113,12 +119,40 @@ if (!function_exists('register_meta')) {
 }
 
 if (!function_exists('add_role')) {
-    function add_role() {
+    function add_role($role, $display_name, array $capabilities = []) {
+        $GLOBALS['svdp_test_roles'][(string) $role] = new class($role, $display_name, $capabilities) {
+            public $name;
+            public $label;
+            public $capabilities;
+
+            public function __construct($name, $label, array $capabilities) {
+                $this->name = $name;
+                $this->label = $label;
+                $this->capabilities = $capabilities;
+            }
+
+            public function add_cap($capability, $grant = true) {
+                $this->capabilities[(string) $capability] = (bool) $grant;
+            }
+
+            public function remove_cap($capability) {
+                unset($this->capabilities[(string) $capability]);
+            }
+        };
+
+        return $GLOBALS['svdp_test_roles'][(string) $role];
     }
 }
 
 if (!function_exists('remove_role')) {
-    function remove_role() {
+    function remove_role($role) {
+        unset($GLOBALS['svdp_test_roles'][(string) $role]);
+    }
+}
+
+if (!function_exists('get_role')) {
+    function get_role($role) {
+        return $GLOBALS['svdp_test_roles'][(string) $role] ?? null;
     }
 }
 
@@ -206,9 +240,31 @@ $GLOBALS['svdp_test_now'] = null;
 $GLOBALS['svdp_test_rewrite_tags'] = [];
 $GLOBALS['svdp_test_rewrite_rules'] = [];
 $GLOBALS['svdp_test_admin_menus'] = [];
+$GLOBALS['svdp_test_actions'] = [];
 $GLOBALS['svdp_test_current_user_caps'] = [];
 $GLOBALS['svdp_test_options'] = [];
 $GLOBALS['svdp_test_next_post_id'] = 2000;
+$GLOBALS['svdp_test_roles'] = [
+    'administrator' => new class('administrator', 'Administrator', []) {
+        public $name;
+        public $label;
+        public $capabilities;
+
+        public function __construct($name, $label, array $capabilities) {
+            $this->name = $name;
+            $this->label = $label;
+            $this->capabilities = $capabilities;
+        }
+
+        public function add_cap($capability, $grant = true) {
+            $this->capabilities[(string) $capability] = (bool) $grant;
+        }
+
+        public function remove_cap($capability) {
+            unset($this->capabilities[(string) $capability]);
+        }
+    },
+];
 
 if (!function_exists('get_user_meta')) {
     function get_user_meta($user_id, $key = '', $single = false) {
