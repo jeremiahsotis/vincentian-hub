@@ -45,6 +45,7 @@ function build_dashboard_dataset($user, array $route_context) {
         'dashboard_kind' => (string) ($route_context['dashboard_kind'] ?? ''),
         'conference_context' => $route_context['conference_context'] ?? [],
         'visibility_context' => $visibility_context,
+        'announcements' => get_visible_announcements_for_dashboard($user),
         'items' => $items,
     ];
 }

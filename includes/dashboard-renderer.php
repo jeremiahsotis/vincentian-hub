@@ -35,6 +35,7 @@ function render_dashboard_dataset(array $dataset) {
     ?>
     <link rel="stylesheet" href="<?php echo esc_url($asset_urls['css']); ?>" />
     <?php
+    echo render_dashboard_announcements($dataset['announcements'] ?? []);
     include $template_path;
     ?>
     <script src="<?php echo esc_url($asset_urls['js']); ?>" defer></script>

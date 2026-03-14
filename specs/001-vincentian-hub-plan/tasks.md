@@ -191,15 +191,15 @@
 
 ### PR Slice: Announcements
 
-- [ ] T017 [P] [US2] Add failing announcement tests in `/tests/unit/test-announcements.php` and `/tests/integration/test-announcement-visibility.php`
+- [X] T017 [P] [US2] Add failing announcement tests in `/tests/unit/AnnouncementsTest.php` and `/tests/integration/AnnouncementVisibilityTest.php`
   Description: Lock the shared targeting behavior, placement enums, and announcement visibility expectations before implementing announcement helpers.
-  Files/Modules Affected: `/tests/unit/test-announcements.php`, `/tests/integration/test-announcement-visibility.php`
+  Files/Modules Affected: `/tests/unit/AnnouncementsTest.php`, `/tests/integration/AnnouncementVisibilityTest.php`
   Dependencies: T016
   Acceptance Criteria: Tests cover contract-locked announcement enums, resolver-based announcement visibility, and announcements-only capability boundaries; tests fail before implementation.
   PR Slice Grouping: Announcements
   Contract/Risk Checks: Contract check: announcement enums and targeting keys remain canonical. Security check: no announcement-specific visibility model outside the resolver.
 
-- [ ] T018 [US2] Implement announcement behavior in `/includes/announcements.php`, `/includes/dashboard-query.php`, and `/includes/dashboard-renderer.php`
+- [X] T018 [US2] Implement announcement behavior in `/includes/announcements.php`, `/includes/dashboard-query.php`, and `/includes/dashboard-renderer.php`
   Description: Add announcement queries/render helpers that reuse the shared targeting block and integrate them into the existing dashboard pipeline without collapsing query/render separation.
   Files/Modules Affected: `/includes/announcements.php`, `/includes/dashboard-query.php`, `/includes/dashboard-renderer.php`
   Dependencies: T017

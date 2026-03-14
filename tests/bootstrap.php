@@ -269,6 +269,7 @@ require_once dirname(__DIR__) . '/includes/conferences.php';
 require_once dirname(__DIR__) . '/includes/targeting-resolver.php';
 require_once dirname(__DIR__) . '/includes/permissions.php';
 require_once dirname(__DIR__) . '/includes/shortcode-context.php';
+require_once dirname(__DIR__) . '/includes/announcements.php';
 require_once dirname(__DIR__) . '/includes/dashboard-query.php';
 require_once dirname(__DIR__) . '/includes/dashboard-renderer.php';
 require_once dirname(__DIR__) . '/includes/routes.php';
