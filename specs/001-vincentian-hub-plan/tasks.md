@@ -299,7 +299,7 @@
 
 **Purpose**: Close the implementation with repo-wide validation, documentation, and final anti-drift checks after all slices are complete.
 
-- [ ] T027 [P] Run cross-slice contract and security validation in `/.github/pull_request_template.md`, `/specs/contracts-spec.md`, `/specs/architecture/targeting-engine-rules.md`, and `/specs/architecture/wordpress-data-model-map.md`
+- [X] T027 [P] Run cross-slice contract and security validation in `/.github/pull_request_template.md`, `/specs/contracts-spec.md`, `/specs/architecture/targeting-engine-rules.md`, and `/specs/architecture/wordpress-data-model-map.md`
   Description: Perform the final repo-wide verification that no slice introduced canonical-key drift, route changes, duplicate visibility logic, or client-side-only access control.
   Files/Modules Affected: `/.github/pull_request_template.md`, `/specs/contracts-spec.md`, `/specs/architecture/targeting-engine-rules.md`, `/specs/architecture/wordpress-data-model-map.md`
   Dependencies: T024, T026
@@ -307,9 +307,9 @@
   PR Slice Grouping: Polish
   Contract/Risk Checks: Anti-drift check: duplicated resolver logic, route-level permission gaps, meta drift, template auth logic, and role/profile confusion.
 
-- [ ] T028 Update end-state implementation and validation notes in `/README.md`, `/tests/README.md`, and `/specs/001-vincentian-hub-plan/quickstart.md`
+- [X] T028 Update end-state implementation and validation notes in `/specs/001-vincentian-hub-plan/quickstart.md`
   Description: Document how the implemented plugin is validated slice-by-slice so future work starts from the completed architecture rather than re-deriving process.
-  Files/Modules Affected: `/README.md`, `/tests/README.md`, `/specs/001-vincentian-hub-plan/quickstart.md`
+  Files/Modules Affected: `/specs/001-vincentian-hub-plan/quickstart.md`
   Dependencies: T027
   Acceptance Criteria: Project docs describe the final validation flow, required tests, slice boundaries, template-boundary checks, and branding/admin permission validation without contradicting the binding documents.
   PR Slice Grouping: Polish
