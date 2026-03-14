@@ -33,6 +33,36 @@ if (!function_exists('add_action')) {
     }
 }
 
+if (!function_exists('add_menu_page')) {
+    function add_menu_page($page_title, $menu_title, $capability, $menu_slug, $callback = null) {
+        $GLOBALS['svdp_test_admin_menus'][] = [
+            'page_title' => $page_title,
+            'menu_title' => $menu_title,
+            'capability' => $capability,
+            'menu_slug' => $menu_slug,
+            'callback' => $callback,
+            'parent' => null,
+        ];
+
+        return $menu_slug;
+    }
+}
+
+if (!function_exists('add_submenu_page')) {
+    function add_submenu_page($parent_slug, $page_title, $menu_title, $capability, $menu_slug, $callback = null) {
+        $GLOBALS['svdp_test_admin_menus'][] = [
+            'page_title' => $page_title,
+            'menu_title' => $menu_title,
+            'capability' => $capability,
+            'menu_slug' => $menu_slug,
+            'callback' => $callback,
+            'parent' => $parent_slug,
+        ];
+
+        return $menu_slug;
+    }
+}
+
 if (!function_exists('add_rewrite_tag')) {
     function add_rewrite_tag($tag, $regex) {
         $GLOBALS['svdp_test_rewrite_tags'][] = [
@@ -93,8 +123,12 @@ if (!function_exists('remove_role')) {
 }
 
 if (!function_exists('current_user_can')) {
-    function current_user_can() {
-        return true;
+    function current_user_can($capability = '') {
+        if ($capability === '') {
+            return true;
+        }
+
+        return !empty($GLOBALS['svdp_test_current_user_caps'][(string) $capability]);
     }
 }
 
@@ -147,13 +181,14 @@ if (!function_exists('__return_true')) {
 }
 
 if (!function_exists('get_option')) {
-    function get_option() {
-        return null;
+    function get_option($option, $default = null) {
+        return $GLOBALS['svdp_test_options'][(string) $option] ?? $default;
     }
 }
 
 if (!function_exists('update_option')) {
-    function update_option() {
+    function update_option($option, $value) {
+        $GLOBALS['svdp_test_options'][(string) $option] = $value;
         return true;
     }
 }
@@ -170,6 +205,10 @@ $GLOBALS['svdp_test_posts'] = [];
 $GLOBALS['svdp_test_now'] = null;
 $GLOBALS['svdp_test_rewrite_tags'] = [];
 $GLOBALS['svdp_test_rewrite_rules'] = [];
+$GLOBALS['svdp_test_admin_menus'] = [];
+$GLOBALS['svdp_test_current_user_caps'] = [];
+$GLOBALS['svdp_test_options'] = [];
+$GLOBALS['svdp_test_next_post_id'] = 2000;
 
 if (!function_exists('get_user_meta')) {
     function get_user_meta($user_id, $key = '', $single = false) {
@@ -242,6 +281,38 @@ if (!function_exists('get_posts')) {
     }
 }
 
+if (!function_exists('wp_insert_post')) {
+    function wp_insert_post(array $postarr) {
+        $post_id = (int) ($postarr['ID'] ?? 0);
+        if ($post_id <= 0) {
+            $post_id = (int) $GLOBALS['svdp_test_next_post_id']++;
+        }
+
+        $GLOBALS['svdp_test_posts'][$post_id] = (object) [
+            'ID' => $post_id,
+            'post_type' => $postarr['post_type'] ?? 'post',
+            'post_status' => $postarr['post_status'] ?? 'draft',
+            'post_title' => $postarr['post_title'] ?? '',
+            'post_content' => $postarr['post_content'] ?? '',
+            'post_name' => $postarr['post_name'] ?? '',
+        ];
+
+        return $post_id;
+    }
+}
+
+if (!function_exists('update_post_meta')) {
+    function update_post_meta($post_id, $meta_key, $meta_value) {
+        if (!isset($GLOBALS['svdp_test_post_meta'][(int) $post_id])) {
+            $GLOBALS['svdp_test_post_meta'][(int) $post_id] = [];
+        }
+
+        $GLOBALS['svdp_test_post_meta'][(int) $post_id][(string) $meta_key] = $meta_value;
+
+        return true;
+    }
+}
+
 if (!function_exists('current_time')) {
     function current_time(...$args) {
         return $GLOBALS['svdp_test_now'] ?? gmdate('Y-m-d H:i:s');
@@ -276,4 +347,7 @@ require_once dirname(__DIR__) . '/includes/calendar-ics.php';
 require_once dirname(__DIR__) . '/includes/dashboard-query.php';
 require_once dirname(__DIR__) . '/includes/dashboard-renderer.php';
 require_once dirname(__DIR__) . '/includes/routes.php';
+require_once dirname(__DIR__) . '/includes/settings.php';
+require_once dirname(__DIR__) . '/includes/admin-menu.php';
+require_once dirname(__DIR__) . '/includes/drive-imports.php';
 require_once dirname(__DIR__) . '/includes/bootstrap.php';
